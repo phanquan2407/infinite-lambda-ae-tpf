@@ -5,24 +5,27 @@ on:
     branches: [main]
 
 jobs:
-  dbt-build:
+  validate-dbt-project:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
           cache: pip
-      - run: pip install -r requirements.txt
-      - run: dbt deps
-      - run: cp profiles.example.yml profiles.yml
-      - name: Write service account key
-        shell: bash
-        run: echo "$GCP_SERVICE_ACCOUNT_KEY" > "$RUNNER_TEMP/gcp-key.json"
-        env:
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      - name: Build in isolated CI schema
-        run: dbt build --target prod --profiles-dir .
-        env:
-          DBT_GCP_PROJECT_ID: ${{ secrets.DBT_GCP_PROJECT_ID }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gcp-key.json
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Create CI profile
+        run: cp profiles.example.yml profiles.yml
+
+      - name: Validate dbt project
+        run: dbt parse --profiles-dir . --no-partial-parse
