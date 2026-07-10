@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: thelook_ecommerce
+    description: Public synthetic ecommerce dataset maintained in BigQuery.
+    database: bigquery-public-data
+    schema: thelook_ecommerce
+    tables:
+      - name: order_items
+        loaded_at_field: created_at
+        config:
+          freshness:
+            warn_after: {count: 10000, period: day}
+      - name: products
+      - name: users
+

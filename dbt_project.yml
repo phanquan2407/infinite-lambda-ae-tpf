@@ -1,0 +1,29 @@
+name: infinite_lambda_ecommerce
+version: 1.0.0
+config-version: 2
+
+profile: infinite_lambda_ecommerce
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+clean-targets: ["target", "dbt_packages", "logs"]
+
+models:
+  infinite_lambda_ecommerce:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +schema: marts
+      dimensions:
+        +materialized: table
+      facts:
+        +materialized: incremental
+      reporting:
+        +materialized: table
+

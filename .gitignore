@@ -1,0 +1,10 @@
+target/
+dbt_packages/
+logs/
+.venv/
+venv/
+.env
+profiles.yml
+*.json
+!.vscode/*.json
+

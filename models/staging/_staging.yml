@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: Cleaned order-item events at one row per source order item.
+    columns:
+      - name: order_item_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests: [not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['cancelled', 'complete', 'processing', 'returned', 'shipped']
+      - name: sale_price
+        tests: [not_null]
+
+  - name: stg_products
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+      - name: unit_cost
+        tests: [not_null]
+
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: email_hash
+        description: SHA-256 hash of normalized email; raw email is excluded downstream.
+        tests: [not_null]
+

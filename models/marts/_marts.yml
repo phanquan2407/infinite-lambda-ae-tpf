@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: Customer dimension with direct PII removed and email irreversibly hashed.
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+  - name: dim_products
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+  - name: fct_order_items
+    description: Incremental fact at one row per order item; source of profitability metrics.
+    columns:
+      - name: order_item_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: net_revenue
+        tests: [not_null]
+      - name: product_cost
+        tests: [not_null]
+  - name: mart_ecommerce_profitability
+    description: BI-ready daily profitability mart used directly by Looker Studio.
+    columns:
+      - name: created_date
+        tests: [not_null]
+
