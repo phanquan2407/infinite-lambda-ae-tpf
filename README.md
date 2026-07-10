@@ -20,6 +20,18 @@ Cancelled and returned items contribute zero net revenue, zero recognized cost, 
 - Fact: one row per `order_item_id`, incrementally merged and partitioned by creation date.
 - Reporting: daily profitability aggregates for direct BI consumption.
 
+See [Architecture and Data Model](docs/architecture.md) for the layered flow, ERD, grain decisions, governance controls, trade-offs, and production extensions.
+
+## Evaluation evidence
+
+| Area | Evidence |
+| --- | --- |
+| Data Modeling | Layered dimensional model, documented grain, ERD, and dbt DAG |
+| Transformation | Staging cleanup, deduplication, macro, and incremental merge |
+| Governance | Generic tests, financial identity test, and SHA-256 email hashing |
+| Insight | Governed gross-profit mart connected directly to Looker Studio |
+| DataOps | Feature branches, pull requests, pinned dependencies, and GitHub Actions validation |
+
 ## Local Windows setup
 
 ```powershell
@@ -45,5 +57,7 @@ dbt run --profiles-dir . --select fct_order_items
 dbt test --profiles-dir . --select fct_order_items
 dbt show --profiles-dir . --select mart_ecommerce_profitability --limit 10
 ```
+
+The demo uses BigQuery Sandbox. The initial build is supported, while subsequent incremental `MERGE` execution is restricted because Sandbox does not support DML without billing. This limitation is documented rather than hidden.
 
 Never commit `profiles.yml`, service-account JSON, access tokens, or passwords.
